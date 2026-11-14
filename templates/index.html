@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scam Message Shield</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f7f6;margin:0;color:#222}
+.wrap{max-width:640px;margin:24px auto;padding:0 14px}
+h1{color:#0b3d3a;margin-bottom:2px}.sub{color:#555;margin-top:0}
+textarea{width:100%;height:130px;padding:10px;font-size:15px;border:1px solid #9bb;border-radius:6px;box-sizing:border-box}
+button{background:#0f766e;color:#fff;border:0;padding:10px 20px;font-size:15px;border-radius:6px;cursor:pointer;margin-top:8px}
+.card{background:#fff;border-radius:8px;padding:14px;margin-top:16px;border-left:8px solid #999;box-shadow:0 1px 3px #0002}
+.SCAM{border-color:#c0392b}.SUSPICIOUS{border-color:#e67e22}.SAFE{border-color:#27ae60}
+.badge{font-size:22px;font-weight:bold}.err{color:#b00}.small{font-size:12px;color:#666}
+ul{padding-left:18px}.todo{background:#fff8e1;padding:8px 12px;border-radius:6px}
+</style></head><body><div class="wrap">
+<h1>Scam Message Shield</h1>
+<p class="sub">Paste an SMS or WhatsApp message to check if it looks like a scam.</p>
+<form method="post">
+<input type="hidden" name="csrf" value="{{ csrf }}">
+<textarea name="message" maxlength="1000" placeholder="Paste the message here...">{{ text }}</textarea>
+<button type="submit">Check message</button>
+</form>
+{% if error %}<p class="err">{{ error }}</p>{% endif %}
+{% if result %}
+{% set cls = 'SAFE' if result.label == 'LOOKS SAFE' else result.label %}
+<div class="card {{ cls }}">
+<div class="badge">{{ result.label }} <span class="small">(risk score {{ result.score }}/100)</span></div>
+{% if result.reasons %}<p><b>Why:</b></p><ul>{% for r in result.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+{% else %}<p>No strong scam signs found. Stay careful anyway.</p>{% endif %}
+{% if result.words %}<p class="small">Words the AI model found most scam-like: {{ result.words | join(', ') }}</p>{% endif %}
+<div class="todo"><b>What to do now</b>
+{% if result.label == 'LOOKS SAFE' %}
+<ul><li>No strong scam signs, but no tool is perfect. Never share your OTP, PIN or CVV with anyone.</li></ul>
+{% else %}
+<ul><li>Do not click any link, call the number or reply.</li>
+<li>Never share your OTP, PIN, CVV or Aadhaar details.</li>
+<li>If unsure, contact your bank using the number on your card or official app.</li>
+<li>Report suspicious messages (before losing money) at the Chakshu facility on sancharsaathi.gov.in.</li>
+<li>If you already lost money, call <b>1930</b> immediately and file a complaint at cybercrime.gov.in.</li></ul>
+{% endif %}</div></div>
+{% endif %}
+<p class="small">Learning prototype: it can be wrong. Your message is checked in memory and is not stored.</p>
+</div></body></html>
